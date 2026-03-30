@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, ClipboardList, UtensilsCrossed } from "lucide-react";
+import { Home, Search, ClipboardList, Tag } from "lucide-react";
 
 const NAV_ITEMS = [
   { href: "/", icon: Home, label: "Home" },
   { href: "/search", icon: Search, label: "Search" },
-  { href: "/restaurant-login", icon: UtensilsCrossed, label: "Restaurants" },
+  { href: "/offers", icon: Tag, label: "Offers" },
   { href: "/orders", icon: ClipboardList, label: "Orders" },
 ];
 
