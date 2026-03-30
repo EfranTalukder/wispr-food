@@ -1,14 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Search, User } from "lucide-react";
+import { MapPin, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useLocation } from "@/contexts/LocationContext";
 
 export default function Header() {
   const router = useRouter();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const { location, openModal } = useLocation();
+
+  // Shorten label for header (first part before comma)
+  const shortLocation = location.split(",")[0].trim();
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -20,8 +25,8 @@ export default function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
@@ -32,36 +37,38 @@ export default function Header() {
           </span>
         </Link>
 
-        {/* Location */}
-        <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-primary transition mx-4 shrink-0">
-          <MapPin size={16} className="text-primary" />
-          <span className="hidden sm:inline">Washington, DC</span>
-          <span className="sm:hidden">Washington</span>
+        {/* Location button — tappable, opens modal */}
+        <button
+          onClick={openModal}
+          className="flex items-center gap-1.5 min-w-0 flex-1 sm:flex-none bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition rounded-xl px-3 py-2 max-w-[200px]"
+        >
+          <MapPin size={15} className="text-primary shrink-0" />
+          <span className="text-sm font-semibold text-gray-800 truncate">
+            {shortLocation}
+          </span>
+          <ChevronDown size={14} className="text-gray-400 shrink-0" />
         </button>
 
-        {/* Search & Profile */}
-        <div className="flex items-center gap-3">
-          {searchOpen ? (
+        {/* Search & icons */}
+        <div className="flex items-center gap-1 shrink-0">
+          {searchOpen && (
             <form onSubmit={handleSearch} className="flex items-center">
               <input
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="Search restaurants or food..."
-                className="w-40 sm:w-64 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:border-primary"
+                className="w-36 sm:w-64 px-3 py-1.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-primary"
                 autoFocus
               />
             </form>
-          ) : null}
+          )}
           <button
             onClick={() => setSearchOpen(!searchOpen)}
-            className="p-2 rounded-full hover:bg-gray-100 transition"
+            className="p-2.5 rounded-xl hover:bg-gray-100 transition"
             aria-label="Search"
           >
             <Search size={20} className="text-gray-600" />
-          </button>
-          <button className="p-2 rounded-full hover:bg-gray-100 transition" aria-label="Profile">
-            <User size={20} className="text-gray-600" />
           </button>
         </div>
       </div>

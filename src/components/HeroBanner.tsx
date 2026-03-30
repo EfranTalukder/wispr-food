@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin } from "lucide-react";
+import { Search, MapPin, ChevronDown } from "lucide-react";
+import { useLocation } from "@/contexts/LocationContext";
 
 export default function HeroBanner() {
   const router = useRouter();
   const [query, setQuery] = useState("");
+  const { location, openModal } = useLocation();
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -23,11 +25,17 @@ export default function HeroBanner() {
       <div className="absolute top-4 right-16 w-16 h-16 bg-white/10 rounded-full" />
 
       <div className="relative z-10 px-5 pt-7 pb-6 sm:px-10 sm:pt-10 sm:pb-8">
-        {/* Location pill */}
-        <div className="inline-flex items-center gap-1.5 bg-white/20 rounded-full px-3 py-1 mb-3">
-          <MapPin size={12} className="text-white" />
-          <span className="text-white text-xs font-medium">Delivering in Washington, DC</span>
-        </div>
+        {/* Tappable location pill */}
+        <button
+          onClick={openModal}
+          className="inline-flex items-center gap-1.5 bg-white/20 hover:bg-white/30 active:bg-white/40 transition rounded-full px-3 py-1.5 mb-3"
+        >
+          <MapPin size={12} className="text-white shrink-0" />
+          <span className="text-white text-xs font-semibold truncate max-w-[200px]">
+            {location}
+          </span>
+          <ChevronDown size={12} className="text-white/70 shrink-0" />
+        </button>
 
         <h1 className="text-2xl sm:text-3xl font-bold text-white leading-snug mb-1">
           Hungry? We&apos;ve got you
