@@ -82,14 +82,14 @@ function OrderCard({
             <span className="text-gray-300">
               {item.name} <span className="text-gray-500">× {item.quantity}</span>
             </span>
-            <span className="text-gray-400">৳{item.price * item.quantity}</span>
+            <span className="text-gray-400">${item.price * item.quantity}</span>
           </div>
         ))}
       </div>
 
       <div className="flex justify-between font-bold text-white text-base border-t border-gray-700 pt-2">
         <span>Total</span>
-        <span>৳{order.total}</span>
+        <span>${order.total}</span>
       </div>
 
       {order.notes && (
@@ -432,7 +432,7 @@ function MenuTab({ restaurantId }: { restaurantId: string }) {
           />
           <div className="grid grid-cols-2 gap-3">
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">৳</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
               <input
                 type="number"
                 placeholder="Price *"
@@ -533,7 +533,7 @@ function MenuTab({ restaurantId }: { restaurantId: string }) {
                       type="number"
                       value={editForm.price}
                       onChange={(e) => setEditForm((p) => ({ ...p, price: e.target.value }))}
-                      placeholder="Price (৳)"
+                      placeholder="Price ($)"
                       className="px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-primary"
                     />
                     <input
@@ -609,10 +609,10 @@ function MenuTab({ restaurantId }: { restaurantId: string }) {
                     </div>
                     <p className="text-white text-sm font-semibold truncate">{item.name}</p>
                     <p className="text-gray-400 text-sm">
-                      ৳{item.price}
+                      ${item.price}
                       {item.discount_percent > 0 && (
                         <span className="text-accent-green ml-1 text-xs">
-                          → ৳{Math.round(item.price * (1 - item.discount_percent / 100))}
+                          → ${Math.round(item.price * (1 - item.discount_percent / 100))}
                         </span>
                       )}
                     </p>
@@ -774,7 +774,7 @@ function SettingsTab({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Delivery Fee (৳)</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Delivery Fee ($)</label>
             <input
               type="number"
               name="delivery_fee"
@@ -785,7 +785,7 @@ function SettingsTab({
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">Min. Order (৳)</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">Min. Order ($)</label>
             <input
               type="number"
               name="minimum_order"

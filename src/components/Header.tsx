@@ -35,8 +35,8 @@ export default function Header() {
         {/* Location */}
         <button className="flex items-center gap-1 text-sm text-gray-600 hover:text-primary transition mx-4 shrink-0">
           <MapPin size={16} className="text-primary" />
-          <span className="hidden sm:inline">Dhanmondi, Dhaka</span>
-          <span className="sm:hidden">Dhaka</span>
+          <span className="hidden sm:inline">Washington, DC</span>
+          <span className="sm:hidden">Washington</span>
         </button>
 
         {/* Search & Profile */}

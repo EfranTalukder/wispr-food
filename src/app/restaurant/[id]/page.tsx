@@ -8,6 +8,7 @@ import {
   getMenuFromDB,
 } from "@/lib/data";
 import MenuSection from "@/components/MenuSection";
+import MenuCategoryNav from "@/components/MenuCategoryNav";
 import { notFound } from "next/navigation";
 import { MenuCategory, MenuItem } from "@/types";
 
@@ -18,12 +19,10 @@ export default async function RestaurantPage({
 }) {
   const { id } = await params;
 
-  // Try local hardcoded restaurants first
   const localRestaurant = getRestaurantById(id);
 
   if (localRestaurant) {
     const menu = getMenuByRestaurant(id);
-
     return (
       <RestaurantLayout
         id={localRestaurant.id}
@@ -42,16 +41,10 @@ export default async function RestaurantPage({
     );
   }
 
-  // Try DB restaurant (UUID)
   const dbRestaurant = await getDBRestaurantById(id);
-
-  if (!dbRestaurant) {
-    notFound();
-  }
+  if (!dbRestaurant) notFound();
 
   const dbMenu = await getMenuFromDB(id);
-
-  // Convert DB menu groups to MenuSection format
   const menu: (MenuCategory & { items: MenuItem[] })[] = dbMenu.map(
     ({ category, items }, idx) => ({
       id: `cat-${idx}`,
@@ -110,10 +103,12 @@ function RestaurantLayout({
   address: string;
   menu: (MenuCategory & { items: MenuItem[] })[];
 }) {
+  const categoryList = menu.map((c) => ({ id: c.id, name: c.name }));
+
   return (
     <div className="max-w-3xl mx-auto">
       {/* Cover Image */}
-      <div className="relative h-48 sm:h-64">
+      <div className="relative h-52 sm:h-64">
         <Image
           src={image_url}
           alt={name}
@@ -122,76 +117,70 @@ function RestaurantLayout({
           priority
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
         <Link
           href="/"
-          className="absolute top-4 left-4 p-2 bg-white/90 rounded-full hover:bg-white transition shadow-md"
+          className="absolute top-4 left-4 p-2.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md active:scale-95 transition"
         >
-          <ArrowLeft size={20} className="text-gray-800" />
+          <ArrowLeft size={18} className="text-gray-800" />
         </Link>
-      </div>
-
-      {/* Restaurant Info */}
-      <div className="px-4 -mt-8 relative z-10">
-        <div className="bg-white rounded-2xl p-5 shadow-md border border-gray-100">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">
-                {name}
-              </h1>
-              <p className="text-sm text-gray-500 mt-1">{cuisine_type}</p>
-            </div>
-            {rating !== null && (
-              <div className="flex items-center gap-1 bg-accent-green/10 px-3 py-1 rounded-lg shrink-0">
-                <Star size={16} className="text-accent-green fill-accent-green" />
-                <span className="font-bold text-accent-green">{rating}</span>
-                {review_count !== null && (
-                  <span className="text-xs text-gray-400 ml-1">
-                    ({review_count}+)
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
-
-          <div className="flex items-center gap-4 mt-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1.5">
-              <Clock size={15} className="text-primary" />
-              <span>
-                {delivery_time_min}-{delivery_time_max} min
-              </span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Bike size={15} className="text-primary" />
-              <span>৳{delivery_fee} delivery</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <MapPin size={15} className="text-primary" />
-              <span>{address}</span>
-            </div>
-          </div>
-
-          {minimum_order > 0 && (
-            <p className="text-xs text-gray-400 mt-3 bg-gray-50 px-3 py-1.5 rounded-lg inline-block">
-              Minimum order: ৳{minimum_order}
-            </p>
-          )}
+        {/* Restaurant name overlay on image */}
+        <div className="absolute bottom-4 left-4 right-4">
+          <h1 className="text-white text-2xl font-bold drop-shadow-lg">{name}</h1>
+          <p className="text-white/80 text-sm mt-0.5">{cuisine_type}</p>
         </div>
       </div>
 
+      {/* Info strip */}
+      <div className="bg-white px-4 py-4 border-b border-gray-100">
+        <div className="flex items-center gap-3 flex-wrap">
+          {rating !== null && (
+            <div className="flex items-center gap-1 bg-green-50 px-2.5 py-1 rounded-lg">
+              <Star size={14} className="text-accent-green fill-accent-green" />
+              <span className="font-bold text-accent-green text-sm">{rating}</span>
+              {review_count !== null && (
+                <span className="text-xs text-gray-400">({review_count}+)</span>
+              )}
+            </div>
+          )}
+          <div className="flex items-center gap-1.5 text-sm text-gray-600">
+            <Clock size={14} className="text-primary" />
+            <span>{delivery_time_min}–{delivery_time_max} min</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-sm text-gray-600">
+            <Bike size={14} className="text-primary" />
+            <span>{delivery_fee === 0 ? "Free delivery" : `$${delivery_fee} delivery`}</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-sm text-gray-500">
+            <MapPin size={13} className="text-gray-400" />
+            <span className="truncate max-w-[180px]">{address}</span>
+          </div>
+        </div>
+        {minimum_order > 0 && (
+          <p className="text-xs text-gray-400 mt-2">
+            Min. order: ${minimum_order}
+          </p>
+        )}
+      </div>
+
+      {/* Sticky category nav */}
+      <MenuCategoryNav categories={categoryList} />
+
       {/* Menu */}
-      <div className="px-4 py-6 space-y-8">
-        <h2 className="text-lg font-bold text-gray-900">Menu</h2>
+      <div className="px-4 py-5 space-y-8 pb-32">
         {menu.length === 0 ? (
-          <p className="text-gray-400 text-sm">No menu items available yet.</p>
+          <p className="text-gray-400 text-sm text-center py-10">
+            No menu items available yet.
+          </p>
         ) : (
           menu.map((category) => (
-            <MenuSection
-              key={category.id}
-              category={category}
-              restaurantId={id}
-              restaurantName={name}
-            />
+            <section key={category.id} id={`cat-${category.id}`}>
+              <MenuSection
+                category={category}
+                restaurantId={id}
+                restaurantName={name}
+              />
+            </section>
           ))
         )}
       </div>

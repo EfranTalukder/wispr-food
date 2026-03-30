@@ -35,7 +35,7 @@ export default function CartDrawer() {
             {totalItems}
           </span>
         </div>
-        <span className="text-sm font-semibold">৳{total}</span>
+        <span className="text-sm font-semibold">${total}</span>
         <span className="text-sm opacity-80">View Cart</span>
       </button>
 
@@ -75,7 +75,7 @@ export default function CartDrawer() {
             <div key={item.id} className="flex items-center gap-3">
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 text-sm truncate">{item.name}</p>
-                <p className="text-sm text-gray-500">৳{item.price} each</p>
+                <p className="text-sm text-gray-500">${item.price} each</p>
               </div>
               <div className="flex items-center gap-2">
                 <button
@@ -93,7 +93,7 @@ export default function CartDrawer() {
                 </button>
               </div>
               <p className="w-16 text-right font-semibold text-sm text-gray-900">
-                ৳{item.price * quantity}
+                ${item.price * quantity}
               </p>
             </div>
           ))}
@@ -104,15 +104,15 @@ export default function CartDrawer() {
           <div className="space-y-1.5 text-sm">
             <div className="flex justify-between text-gray-500">
               <span>Subtotal</span>
-              <span>৳{subtotal}</span>
+              <span>${subtotal}</span>
             </div>
             <div className="flex justify-between text-gray-500">
               <span>Delivery fee</span>
-              <span>৳{deliveryFee}</span>
+              <span>${deliveryFee}</span>
             </div>
             <div className="flex justify-between font-bold text-gray-900 text-base pt-1 border-t border-gray-100">
               <span>Total</span>
-              <span>৳{total}</span>
+              <span>${total}</span>
             </div>
           </div>
 

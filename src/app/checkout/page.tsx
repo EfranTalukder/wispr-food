@@ -37,8 +37,8 @@ export default function CheckoutPage() {
     const newErrors: Partial<CheckoutFormData> = {};
     if (!form.customer_name.trim()) newErrors.customer_name = "Name is required";
     if (!form.phone.trim()) newErrors.phone = "Phone number is required";
-    else if (!/^01[0-9]{9}$/.test(form.phone.trim()))
-      newErrors.phone = "Enter a valid BD phone number (e.g. 01XXXXXXXXX)";
+    else if (!/^\+?[0-9\s\-().]{7,15}$/.test(form.phone.trim()))
+      newErrors.phone = "Enter a valid phone number";
     if (!form.address.trim()) newErrors.address = "Delivery address is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -247,7 +247,7 @@ export default function CheckoutPage() {
                     <span className="text-gray-400">× {quantity}</span>
                   </span>
                   <span className="font-medium text-gray-900">
-                    ৳{item.price * quantity}
+                    ${item.price * quantity}
                   </span>
                 </div>
               ))}
@@ -256,15 +256,15 @@ export default function CheckoutPage() {
             <div className="border-t border-gray-100 pt-3 space-y-1.5 text-sm">
               <div className="flex justify-between text-gray-500">
                 <span>Subtotal</span>
-                <span>৳{subtotal}</span>
+                <span>${subtotal}</span>
               </div>
               <div className="flex justify-between text-gray-500">
                 <span>Delivery fee</span>
-                <span>৳{deliveryFee}</span>
+                <span>${deliveryFee}</span>
               </div>
               <div className="flex justify-between font-bold text-gray-900 text-base pt-2 border-t border-gray-100">
                 <span>Total</span>
-                <span>৳{total}</span>
+                <span>${total}</span>
               </div>
             </div>
 
@@ -284,7 +284,7 @@ export default function CheckoutPage() {
               ) : (
                 <>
                   <CheckCircle size={18} />
-                  Place Order · ৳{total}
+                  Place Order · ${total}
                 </>
               )}
             </button>

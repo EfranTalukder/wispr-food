@@ -19,7 +19,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Wispr Food — Food Delivery",
   description:
-    "Order food from the best restaurants in Dhaka. Fast delivery, great prices.",
+    "Order food from the best restaurants in Washington, DC. Fast delivery, great prices.",
 };
 
 export default function RootLayout({

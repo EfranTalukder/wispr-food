@@ -111,7 +111,7 @@ export default function OrderConfirmationPage() {
                   <span className="text-gray-400">× {item.quantity}</span>
                 </span>
                 <span className="font-medium text-gray-900">
-                  ৳{item.price * item.quantity}
+                  ${item.price * item.quantity}
                 </span>
               </div>
             ))}
@@ -119,15 +119,15 @@ export default function OrderConfirmationPage() {
           <div className="border-t border-gray-100 mt-3 pt-3 space-y-1 text-sm">
             <div className="flex justify-between text-gray-400">
               <span>Subtotal</span>
-              <span>৳{order.subtotal}</span>
+              <span>${order.subtotal}</span>
             </div>
             <div className="flex justify-between text-gray-400">
               <span>Delivery fee</span>
-              <span>৳{order.delivery_fee}</span>
+              <span>${order.delivery_fee}</span>
             </div>
             <div className="flex justify-between font-bold text-gray-900 text-base pt-1">
               <span>Total Paid (COD)</span>
-              <span>৳{order.total}</span>
+              <span>${order.total}</span>
             </div>
           </div>
         </div>
@@ -154,7 +154,7 @@ export default function OrderConfirmationPage() {
         <div className="px-5 py-4">
           <p className="text-xs text-gray-400 uppercase tracking-wide mb-1">Payment</p>
           <p className="text-sm font-medium text-gray-900">Cash on Delivery</p>
-          <p className="text-xs text-gray-400">Please have ৳{order.total} ready</p>
+          <p className="text-xs text-gray-400">Please have ${order.total} ready</p>
         </div>
       </div>
 

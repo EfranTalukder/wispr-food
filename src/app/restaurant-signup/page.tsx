@@ -191,7 +191,7 @@ export default function RestaurantSignupPage() {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Delivery Fee (৳)
+                  Delivery Fee ($)
                 </label>
                 <input
                   type="number"
@@ -204,7 +204,7 @@ export default function RestaurantSignupPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">
-                  Min. Order (৳)
+                  Min. Order ($)
                 </label>
                 <input
                   type="number"

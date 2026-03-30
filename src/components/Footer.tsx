@@ -1,28 +1,50 @@
+"use client";
+
 import Link from "next/link";
-import { Home, Search, Clock, User } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Home, Search, ClipboardList, UtensilsCrossed } from "lucide-react";
+
+const NAV_ITEMS = [
+  { href: "/", icon: Home, label: "Home" },
+  { href: "/search", icon: Search, label: "Search" },
+  { href: "/restaurant-login", icon: UtensilsCrossed, label: "Restaurants" },
+  { href: "/checkout", icon: ClipboardList, label: "Orders" },
+];
 
 export default function Footer() {
+  const pathname = usePathname();
+
   return (
     <>
       {/* Mobile bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-200 sm:hidden">
-        <div className="flex items-center justify-around h-14">
-          <Link href="/" className="flex flex-col items-center gap-0.5 text-primary">
-            <Home size={20} />
-            <span className="text-[10px] font-medium">Home</span>
-          </Link>
-          <Link href="/search" className="flex flex-col items-center gap-0.5 text-gray-400 hover:text-primary transition">
-            <Search size={20} />
-            <span className="text-[10px] font-medium">Search</span>
-          </Link>
-          <Link href="/" className="flex flex-col items-center gap-0.5 text-gray-400 hover:text-primary transition">
-            <Clock size={20} />
-            <span className="text-[10px] font-medium">Orders</span>
-          </Link>
-          <Link href="/" className="flex flex-col items-center gap-0.5 text-gray-400 hover:text-primary transition">
-            <User size={20} />
-            <span className="text-[10px] font-medium">Profile</span>
-          </Link>
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-gray-100 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] sm:hidden safe-area-bottom">
+        <div className="flex items-center justify-around h-16 px-2">
+          {NAV_ITEMS.map(({ href, icon: Icon, label }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className="flex flex-col items-center justify-center gap-1 flex-1 py-2 relative"
+              >
+                {isActive && (
+                  <span className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-0.5 bg-primary rounded-full" />
+                )}
+                <Icon
+                  size={22}
+                  className={isActive ? "text-primary" : "text-gray-400"}
+                  strokeWidth={isActive ? 2.5 : 1.8}
+                />
+                <span
+                  className={`text-[11px] font-semibold ${
+                    isActive ? "text-primary" : "text-gray-400"
+                  }`}
+                >
+                  {label}
+                </span>
+              </Link>
+            );
+          })}
         </div>
       </nav>
 
