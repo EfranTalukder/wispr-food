@@ -32,8 +32,8 @@ export default function RestaurantSignupPage() {
     cuisine_type: "Bengali",
     address: "",
     phone: "",
-    delivery_fee: "49",
-    minimum_order: "150",
+    delivery_fee: "2",
+    minimum_order: "5",
     email: "",
     password: "",
     confirm_password: "",
@@ -181,7 +181,7 @@ export default function RestaurantSignupPage() {
                 name="phone"
                 value={form.phone}
                 onChange={handleChange}
-                placeholder="01XXXXXXXXX"
+                placeholder="(555) 000-0000"
                 required
                 className="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-xl text-white placeholder-gray-500 text-sm focus:outline-none focus:border-primary transition"
               />
