@@ -5,6 +5,7 @@ import { MapPin, Search, ChevronDown } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocation } from "@/contexts/LocationContext";
+import Logo from "@/components/Logo";
 
 export default function Header() {
   const router = useRouter();
@@ -28,12 +29,12 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-3">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
-          <div className="w-9 h-9 bg-primary rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-lg">W</span>
-          </div>
-          <span className="text-xl font-bold text-gray-900 hidden sm:block">
-            Wispr <span className="text-primary">Food</span>
+        <Link href="/" className="shrink-0">
+          <span className="sm:hidden">
+            <Logo size={36} showText={false} />
+          </span>
+          <span className="hidden sm:block">
+            <Logo size={36} showText={true} />
           </span>
         </Link>
 
