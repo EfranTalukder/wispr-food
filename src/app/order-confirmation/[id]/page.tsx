@@ -3,9 +3,19 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import { CheckCircle, Clock, MapPin, Phone, Bike, Home } from "lucide-react";
+import { CheckCircle, Clock, MapPin, Phone, Bike, Home, ChefHat, Package } from "lucide-react";
 import { Order } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+
+const STEPS = [
+  { status: "confirmed", icon: CheckCircle, label: "Order Confirmed" },
+  { status: "preparing", icon: ChefHat, label: "Preparing" },
+  { status: "ready", icon: Package, label: "Ready for Pickup" },
+  { status: "on_the_way", icon: Bike, label: "On the Way" },
+  { status: "delivered", icon: CheckCircle, label: "Delivered" },
+];
+
+const STATUS_ORDER = ["confirmed", "preparing", "ready", "on_the_way", "delivered"];
 
 export default function OrderConfirmationPage() {
   const params = useParams();
@@ -20,11 +30,10 @@ export default function OrderConfirmationPage() {
         const parsed: Order = JSON.parse(raw);
         if (parsed.id === params.id) {
           setOrder(parsed);
-          return;
         }
       }
 
-      // Fall back to Supabase (works after page refresh)
+      // Also fetch from Supabase for latest status
       if (isSupabaseConfigured && supabase) {
         const { data } = await supabase
           .from("orders")
@@ -36,10 +45,23 @@ export default function OrderConfirmationPage() {
           return;
         }
       }
-
-      router.replace("/");
     }
     loadOrder();
+
+    // Subscribe to live status updates
+    if (!isSupabaseConfigured || !supabase) return;
+    const channel = supabase
+      .channel(`order-${params.id}`)
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "orders", filter: `id=eq.${params.id}` },
+        (payload) => {
+          setOrder((prev) => prev ? { ...prev, status: (payload.new as Order).status } : prev);
+        }
+      )
+      .subscribe();
+
+    return () => { supabase?.removeChannel(channel); };
   }, [params.id, router]);
 
   if (!order) {
@@ -90,6 +112,45 @@ export default function OrderConfirmationPage() {
           </p>
         </div>
       </div>
+
+      {/* Live status tracker */}
+      {order.status !== "rejected" && (
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+          <p className="text-xs text-gray-400 uppercase tracking-wide mb-4">Order Status</p>
+          <div className="flex items-start justify-between gap-1">
+            {STEPS.map((step, i) => {
+              const currentIndex = STATUS_ORDER.indexOf(order.status);
+              const stepIndex = STATUS_ORDER.indexOf(step.status);
+              const done = stepIndex <= currentIndex;
+              const active = stepIndex === currentIndex;
+              const Icon = step.icon;
+              return (
+                <div key={step.status} className="flex flex-col items-center flex-1 relative">
+                  {i < STEPS.length - 1 && (
+                    <div className={`absolute top-4 left-1/2 w-full h-0.5 ${done && stepIndex < currentIndex ? "bg-primary" : "bg-gray-200"}`} />
+                  )}
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center z-10 transition-all ${
+                    active ? "bg-primary scale-110 shadow-md shadow-primary/30" :
+                    done ? "bg-primary/20" : "bg-gray-100"
+                  }`}>
+                    <Icon size={15} className={done ? "text-primary" : "text-gray-400"} />
+                  </div>
+                  <p className={`text-[10px] text-center mt-1.5 leading-tight ${active ? "text-primary font-semibold" : done ? "text-gray-500" : "text-gray-300"}`}>
+                    {step.label}
+                  </p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {order.status === "rejected" && (
+        <div className="bg-red-50 border border-red-100 rounded-2xl p-4 text-center">
+          <p className="text-red-600 font-semibold">Order Rejected</p>
+          <p className="text-red-400 text-sm mt-1">The restaurant was unable to accept your order.</p>
+        </div>
+      )}
 
       {/* Order details */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm divide-y divide-gray-50">

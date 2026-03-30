@@ -100,6 +100,11 @@ export default function CheckoutPage() {
     // Save order to sessionStorage so confirmation page can read it (fast path)
     sessionStorage.setItem("wispr_last_order", JSON.stringify(order));
 
+    // Save to localStorage for order history
+    const existing = JSON.parse(localStorage.getItem("wispr_order_history") || "[]");
+    existing.unshift(order);
+    localStorage.setItem("wispr_order_history", JSON.stringify(existing.slice(0, 20)));
+
     clearCart();
 
     // Small delay for UX

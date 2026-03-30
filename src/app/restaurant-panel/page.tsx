@@ -177,6 +177,19 @@ function OrdersTab({ restaurantId }: { restaurantId: string }) {
         },
         (payload) => {
           setOrders((prev) => [payload.new as Order, ...prev]);
+          // Play beep alert for new order
+          try {
+            const ctx = new AudioContext();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.value = 880;
+            gain.gain.setValueAtTime(0.4, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.6);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.6);
+          } catch {}
         }
       )
       .subscribe();
