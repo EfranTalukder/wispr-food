@@ -40,10 +40,10 @@ export default function OrdersPage() {
         const statusMap: Record<string, string> = {};
         data.forEach((row) => { statusMap[row.id] = row.status; });
         setOrders((prev) =>
-          prev.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] } : o)
+          prev.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] as Order["status"] } : o)
         );
         // Update localStorage with fresh statuses
-        const updated = local.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] } : o);
+        const updated = local.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] as Order["status"] } : o);
         localStorage.setItem("wispr_order_history", JSON.stringify(updated));
       }
     }
