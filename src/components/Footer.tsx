@@ -52,12 +52,14 @@ export default function Footer() {
       <footer className="hidden sm:block border-t border-gray-100 mt-10">
         <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-gray-400">
           <span>© {new Date().getFullYear()} Wispr Food</span>
-          <Link
-            href="/restaurant-login"
-            className="hover:text-primary transition font-medium"
-          >
-            Restaurant Login →
-          </Link>
+          <div className="flex items-center gap-5">
+            <Link href="/orders" className="hover:text-primary transition font-medium">
+              My Orders
+            </Link>
+            <Link href="/restaurant-login" className="hover:text-primary transition font-medium">
+              Restaurant Login →
+            </Link>
+          </div>
         </div>
       </footer>
     </>

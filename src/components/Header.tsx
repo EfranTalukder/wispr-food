@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Search, ChevronDown } from "lucide-react";
+import { MapPin, Search, ChevronDown, ClipboardList } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useLocation } from "@/contexts/LocationContext";
@@ -49,6 +49,15 @@ export default function Header() {
           </span>
           <ChevronDown size={14} className="text-gray-400 shrink-0" />
         </button>
+
+        {/* Orders link — desktop only */}
+        <Link
+          href="/orders"
+          className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-gray-600 hover:text-primary transition px-3 py-2 rounded-xl hover:bg-gray-50 shrink-0"
+        >
+          <ClipboardList size={17} />
+          My Orders
+        </Link>
 
         {/* Search & icons */}
         <div className="flex items-center gap-1 shrink-0">
