@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ClipboardList, ChevronRight, Clock } from "lucide-react";
 import { Order } from "@/types";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   confirmed: { label: "Confirmed", color: "bg-blue-100 text-blue-700" },
@@ -19,9 +20,34 @@ export default function OrdersPage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem("wispr_order_history");
-    if (raw) setOrders(JSON.parse(raw));
-    setLoaded(true);
+    async function loadOrders() {
+      const raw = localStorage.getItem("wispr_order_history");
+      if (!raw) { setLoaded(true); return; }
+
+      const local: Order[] = JSON.parse(raw);
+      setOrders(local);
+      setLoaded(true);
+
+      // Refresh statuses from Supabase
+      if (!isSupabaseConfigured || !supabase) return;
+      const ids = local.map((o) => o.id);
+      const { data } = await supabase
+        .from("orders")
+        .select("id, status")
+        .in("id", ids);
+
+      if (data && data.length > 0) {
+        const statusMap: Record<string, string> = {};
+        data.forEach((row) => { statusMap[row.id] = row.status; });
+        setOrders((prev) =>
+          prev.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] } : o)
+        );
+        // Update localStorage with fresh statuses
+        const updated = local.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] } : o);
+        localStorage.setItem("wispr_order_history", JSON.stringify(updated));
+      }
+    }
+    loadOrders();
   }, []);
 
   if (!loaded) return null;
