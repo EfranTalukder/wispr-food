@@ -8,7 +8,7 @@ const NAV_ITEMS = [
   { href: "/", icon: Home, label: "Home" },
   { href: "/search", icon: Search, label: "Search" },
   { href: "/restaurant-login", icon: UtensilsCrossed, label: "Restaurants" },
-  { href: "/checkout", icon: ClipboardList, label: "Orders" },
+  { href: "/orders", icon: ClipboardList, label: "Orders" },
 ];
 
 export default function Footer() {
