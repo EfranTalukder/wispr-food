@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ClipboardList, ChevronRight, Clock } from "lucide-react";
 import { Order } from "@/types";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { useAuth } from "@/contexts/AuthContext";
 
 const STATUS_LABEL: Record<string, { label: string; color: string }> = {
   confirmed: { label: "Confirmed", color: "bg-blue-100 text-blue-700" },
@@ -16,45 +17,72 @@ const STATUS_LABEL: Record<string, { label: string; color: string }> = {
 };
 
 export default function OrdersPage() {
+  const { user } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     async function loadOrders() {
-      const raw = localStorage.getItem("wispr_order_history");
-      if (!raw) { setLoaded(true); return; }
+      const local: Order[] = JSON.parse(localStorage.getItem("wispr_order_history") || "[]");
 
-      const local: Order[] = JSON.parse(raw);
+      if (isSupabaseConfigured && supabase) {
+        if (user) {
+          // Logged in: fetch all orders linked to this account
+          const { data } = await supabase
+            .from("orders")
+            .select("*")
+            .eq("customer_id", user.id)
+            .order("created_at", { ascending: false });
+
+          if (data) {
+            // Merge: account orders first, then any local guest orders not in account
+            const accountIds = new Set(data.map((o) => o.id));
+            const guestOnly = local.filter((o) => !accountIds.has(o.id));
+            setOrders([...(data as Order[]), ...guestOnly]);
+            setLoaded(true);
+            return;
+          }
+        } else {
+          // Guest: just refresh statuses for local orders
+          if (local.length > 0) {
+            const { data } = await supabase
+              .from("orders")
+              .select("id, status")
+              .in("id", local.map((o) => o.id));
+
+            if (data && data.length > 0) {
+              const statusMap: Record<string, string> = {};
+              data.forEach((row) => { statusMap[row.id] = row.status; });
+              const updated = local.map((o) =>
+                statusMap[o.id] ? { ...o, status: statusMap[o.id] as Order["status"] } : o
+              );
+              localStorage.setItem("wispr_order_history", JSON.stringify(updated));
+              setOrders(updated);
+              setLoaded(true);
+              return;
+            }
+          }
+        }
+      }
+
       setOrders(local);
       setLoaded(true);
-
-      // Refresh statuses from Supabase
-      if (!isSupabaseConfigured || !supabase) return;
-      const ids = local.map((o) => o.id);
-      const { data } = await supabase
-        .from("orders")
-        .select("id, status")
-        .in("id", ids);
-
-      if (data && data.length > 0) {
-        const statusMap: Record<string, string> = {};
-        data.forEach((row) => { statusMap[row.id] = row.status; });
-        setOrders((prev) =>
-          prev.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] as Order["status"] } : o)
-        );
-        // Update localStorage with fresh statuses
-        const updated = local.map((o) => statusMap[o.id] ? { ...o, status: statusMap[o.id] as Order["status"] } : o);
-        localStorage.setItem("wispr_order_history", JSON.stringify(updated));
-      }
     }
     loadOrders();
-  }, []);
+  }, [user]);
 
   if (!loaded) return null;
 
   return (
     <div className="max-w-lg mx-auto px-4 py-6">
-      <h1 className="text-xl font-bold text-gray-900 mb-5">My Orders</h1>
+      <div className="flex items-center justify-between mb-5">
+        <h1 className="text-xl font-bold text-gray-900">My Orders</h1>
+        {!user && (
+          <Link href="/login" className="text-sm text-primary font-semibold hover:underline">
+            Sign in to sync →
+          </Link>
+        )}
+      </div>
 
       {orders.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">

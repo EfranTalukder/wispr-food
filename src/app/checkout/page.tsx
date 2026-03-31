@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Bike, CheckCircle, Banknote } from "lucide-react";
@@ -10,11 +11,12 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 export default function CheckoutPage() {
   const { items, restaurantId, restaurantName, subtotal, deliveryFee, total, clearCart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
 
   const [form, setForm] = useState<CheckoutFormData>({
-    customer_name: "",
-    phone: "",
+    customer_name: user?.user_metadata?.name ?? "",
+    phone: user?.user_metadata?.phone ?? "",
     address: "",
     notes: "",
   });
@@ -94,6 +96,7 @@ export default function CheckoutPage() {
         delivery_time_min: order.delivery_time_min,
         delivery_time_max: order.delivery_time_max,
         created_at: order.created_at,
+        ...(user ? { customer_id: user.id } : {}),
       });
     }
 
